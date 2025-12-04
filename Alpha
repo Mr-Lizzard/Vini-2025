@@ -1,0 +1,303 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+struct Veiculo {
+  char placa[8];
+  char modelo[20];
+  char marca[20];
+  int ano;
+  char cor[15];
+  bool alugado;
+  int valorDiaria;
+};
+
+struct Cliente {
+  char nome[50];
+  char cpf[12];
+  char telefone[15];
+  char endereco[100];
+};
+
+struct Aluguel {
+  char placaVeiculo[8];
+  char cpfCliente[12];
+  char dataAluguel[11];
+  char dataDevolucao[11];
+  int totalDias;
+  int valorTotal;
+};
+
+void registrarVeiculo(Veiculo veiculos[], int count) {
+  Veiculo v;
+  printf("Digite a placa do veiculo: ");
+  scanf("%s", v.placa);
+  printf("Digite o modelo do veiculo: ");
+  scanf("%s", v.modelo);
+  getchar(); // Limpar o buffer
+  printf("Digite a marca do veiculo: ");
+  scanf("%s", v.marca);
+  getchar(); // Limpar o buffer
+  printf("Digite o ano do veiculo: ");
+  scanf("%d", &v.ano);
+  printf("Digite a cor do veiculo: ");
+  scanf("%s", v.cor);
+  v.alugado = false;
+  printf("Digite o valor da diaria: ");
+  scanf("%d", &v.valorDiaria);
+  veiculos[count] = v;
+}
+
+void registrarCliente(Cliente clientes[], int count) {
+  Cliente c;
+  printf("Digite o nome do cliente: ");
+  scanf(" %[^\n]", c.nome);
+  printf("Digite o CPF do cliente: ");
+  scanf("%s", c.cpf);
+  printf("Digite o telefone do cliente: ");
+  scanf("%s", c.telefone);
+  printf("Digite o endereco do cliente: ");
+  scanf(" %[^\n]", c.endereco);
+  clientes[count] = c;
+}
+
+void alugar(Veiculo veiculos[], int countVeiculos, Cliente clientes[], int countClientes, Aluguel alugueis[], int *countAlugueis) {
+  char placa[8];
+  char cpf[12];
+  printf("Digite a placa do veiculo a ser alugado: ");
+  scanf("%s", placa);
+  printf("Digite o CPF do cliente: ");
+  scanf("%s", cpf);
+
+  // Verificar se o veiculo esta disponivel
+  for (int i = 0; i < countVeiculos; i++) {
+    if (strcmp(veiculos[i].placa, placa) == 0) {
+      if (veiculos[i].alugado) {
+        printf("Veiculo ja esta alugado.\n");
+        return;
+      } else {
+        veiculos[i].alugado = true;
+        Aluguel a;
+        strcpy(a.placaVeiculo, placa);
+        strcpy(a.cpfCliente, cpf);
+        printf("Digite a data de aluguel (DD/MM/AAAA): ");
+        scanf("%s", a.dataAluguel);
+        printf("Digite a data de devolucao (DD/MM/AAAA): ");
+        scanf("%s", a.dataDevolucao);
+        printf("Digite o total de dias de aluguel: ");
+        scanf("%d", &a.totalDias);
+        a.valorTotal = a.totalDias * veiculos[i].valorDiaria;
+        alugueis[*countAlugueis] = a;
+        (*countAlugueis)++;
+        printf("Aluguel registrado com sucesso. Valor total: %d\n", a.valorTotal);
+        return;
+      }
+    }
+  }
+  printf("Veiculo nao encontrado.\n");
+}
+
+void exibirVeiculos(Veiculo veiculos[], int count) {
+  for (int i = 0; i < count; i++) {
+    printf("Placa: %s, Modelo: %s, Marca: %s, Ano: %d, Cor: %s, Alugado: %s, Valor Diaria: %d\n",
+           veiculos[i].placa, veiculos[i].modelo, veiculos[i].marca,
+           veiculos[i].ano, veiculos[i].cor,
+           veiculos[i].alugado ? "Sim" : "Nao",
+           veiculos[i].valorDiaria);
+  }
+}
+
+void exibirClientes(Cliente clientes[], int count) {
+  for (int i = 0; i < count; i++) {
+    printf("Nome: %s, CPF: %s, Telefone: %s, Endereco: %s\n",
+           clientes[i].nome, clientes[i].cpf,
+           clientes[i].telefone, clientes[i].endereco);
+  }
+}
+
+void exibirAlugueis(Aluguel alugueis[], int count) {
+  for (int i = 0; i < count; i++) {
+    printf("Placa Veiculo: %s, CPF Cliente: %s, Data Aluguel: %s, Data Devolucao: %s, Total Dias: %d, Valor Total: %d\n",
+           alugueis[i].placaVeiculo, alugueis[i].cpfCliente,
+           alugueis[i].dataAluguel, alugueis[i].dataDevolucao,
+           alugueis[i].totalDias, alugueis[i].valorTotal);
+  }
+}
+
+void editarVeiculo(Veiculo veiculos[], int count, const char* placa) {
+  for (int i = 0; i < count; i++) {
+    if (strcmp(veiculos[i].placa, placa) == 0) {
+      printf("Editando veiculo com placa %s\n", placa);
+      printf("Digite o novo modelo do veiculo: ");
+      scanf("%s", veiculos[i].modelo);
+      printf("Digite a nova marca do veiculo: ");
+      scanf("%s", veiculos[i].marca);
+      printf("Digite o novo ano do veiculo: ");
+      scanf("%d", &veiculos[i].ano);
+      printf("Digite a nova cor do veiculo: ");
+      scanf("%s", veiculos[i].cor);
+      printf("Digite o novo valor da diaria: ");
+      scanf("%d", &veiculos[i].valorDiaria);
+      return;
+    }
+  }
+  printf("Veiculo nao encontrado.\n");
+}
+
+void editarCliente(Cliente clientes[], int count, const char* cpf) {
+  for (int i = 0; i < count; i++) {
+    if (strcmp(clientes[i].cpf, cpf) == 0) {
+      printf("Editando cliente com CPF %s\n", cpf);
+      printf("Digite o novo nome do cliente: ");
+      scanf(" %[^\n]", clientes[i].nome);
+      printf("Digite o novo telefone do cliente: ");
+      scanf("%s", clientes[i].telefone);
+      printf("Digite o novo endereco do cliente: ");
+      scanf(" %[^\n]", clientes[i].endereco);
+      return;
+    }
+  }
+  printf("Cliente nao encontrado.\n");
+}
+
+void devolverVeiculo(Veiculo veiculos[], int countVeiculos, Aluguel alugueis[], int *countAlugueis, const char* placa) {
+  for (int i = 0; i < countVeiculos; i++) {
+    if (strcmp(veiculos[i].placa, placa) == 0) {
+      if (!veiculos[i].alugado) {
+        printf("Veiculo nao esta alugado.\n");
+        return;
+      } else {
+        veiculos[i].alugado = false;
+        // Remover aluguel associado
+        for (int j = 0; j < *countAlugueis; j++) {
+          if (strcmp(alugueis[j].placaVeiculo, placa) == 0) {
+            // Shift left to remove aluguel
+            for (int k = j; k < *countAlugueis - 1; k++) {
+              alugueis[k] = alugueis[k + 1];
+            }
+            (*countAlugueis)--;
+            printf("Veiculo devolvido com sucesso.\n");
+            return;
+          }
+        }
+      }
+    }
+  }
+  printf("Veiculo nao encontrado.\n");
+}
+
+void deletarVeiculo(Veiculo veiculos[], int *countVeiculos, const char* placa) {
+  for (int i = 0; i < *countVeiculos; i++) {
+    if (strcmp(veiculos[i].placa, placa) == 0) {
+      for (int j = i; j < *countVeiculos - 1; j++) {
+        veiculos[j] = veiculos[j + 1];
+      }
+      (*countVeiculos)--;
+      printf("Veiculo deletado com sucesso.\n");
+      return;
+    }
+  }
+  printf("Veiculo nao encontrado.\n");
+}
+
+void deletarcliente(Cliente clientes[], int *countClientes, const char* cpf) {
+  for (int i = 0; i < *countClientes; i++) {
+    if (strcmp(clientes[i].cpf, cpf) == 0) {
+      for (int j = i; j < *countClientes - 1; j++) {
+        clientes[j] = clientes[j + 1];
+      }
+      (*countClientes)--;
+      printf("Cliente deletado com sucesso.\n");
+      return;
+    }
+  }
+  printf("Cliente nao encontrado.\n");
+}
+
+int main() {
+  Veiculo veiculos[100];
+  int countVeiculos = 0;
+  Cliente clientes[100];
+  int countClientes = 0;
+  Aluguel alugueis[100];
+  int countAlugueis = 0;
+  int opcao;
+  do {
+    printf("\n--- Sistema de Aluguel de Veiculos ---\n");
+    printf("1. Registrar Veiculo\n");
+    printf("2. Registrar Cliente\n");
+    printf("3. Alugar Veiculo\n");
+    printf("4. Exibir Veiculos\n");
+    printf("5. Exibir Clientes\n");
+    printf("6. Exibir Alugueis\n");
+    printf("7. Editar Veiculo\n");
+    printf("8. Editar Cliente\n");
+    printf("9. Devolver Veiculo\n");
+    printf("10. Deletar Veiculo\n");
+    printf("11. Deletar Cliente\n");
+    printf("12. Sair\n");
+    printf("Escolha uma opcao: ");
+    scanf("%d", &opcao);
+    switch (opcao) {
+      case 1:
+        registrarVeiculo(veiculos, countVeiculos++);
+        break;
+      case 2:
+        registrarCliente(clientes, countClientes++);
+        break;
+      case 3:
+        alugar(veiculos, countVeiculos, clientes, countClientes, alugueis, &countAlugueis);
+        break; 
+      case 4:
+        exibirVeiculos(veiculos, countVeiculos);
+        break;
+      case 5:
+        exibirClientes(clientes, countClientes);
+        break;
+      case 6:
+        exibirAlugueis(alugueis, countAlugueis);
+        break;
+      case 7:
+        char placa[8];
+        printf("Digite a placa do veiculo a ser editado: ");
+        scanf("%s", placa);
+        editarVeiculo(veiculos, countVeiculos, placa);
+        break;
+       
+      case 8:
+        char cpf[12];
+        printf("Digite o CPF do cliente a ser editado: ");
+        scanf("%s", cpf);
+        editarCliente(clientes, countClientes, cpf);
+        break;
+      
+      case 9:
+        printf("Digite a placa do veiculo a ser devolvido: ");
+        scanf("%s", placa);
+        devolverVeiculo(veiculos, countVeiculos, alugueis, &countAlugueis, placa);
+        break;
+      
+      case 10:
+        printf("Digite a placa do veiculo a ser deletado: ");
+        scanf("%s", placa);
+        deletarVeiculo(veiculos, &countVeiculos, placa);
+        break;
+      
+      case 11:
+        printf("Digite o CPF do cliente a ser deletado: ");
+        scanf("%s", cpf);
+        deletarcliente(clientes, &countClientes, cpf);
+        break;
+      
+      case 12:
+        printf("Saindo do sistema.\n");
+        break;
+      
+      default:
+        printf("Opcao invalida. Tente novamente.\n");
+        break;
+  }
+  } while (opcao != 12);
+  return 0;
+
+}
